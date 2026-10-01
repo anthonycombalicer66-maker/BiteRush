@@ -52,6 +52,13 @@
         }
         setText('.header-amount', money(subtotal));
         setText('.total-amount', money(total));
+        const deliveryRows = [...document.querySelectorAll('.summary-card .fee-row')].filter(row => {
+            const title = row.querySelector('.fee-title')?.textContent.trim().toLowerCase();
+            return title === 'standard delivery' || title === 'delivery fee';
+        });
+        deliveryRows.slice(0, -1).forEach(row => {
+            row.hidden = true;
+        });
         const feeAmounts = document.querySelectorAll('.summary-card .fee-amount');
         feeAmounts.forEach(amount => {
             const title = amount.closest('.fee-row')?.querySelector('.fee-title')?.textContent.trim().toLowerCase();
@@ -88,11 +95,24 @@
         if (payment) payment.textContent = money(total);
         const orderButton = document.querySelector('.page .order-button');
         if (orderButton) {
-            orderButton.addEventListener('click', () => {
-                localStorage.removeItem(key);
-                localStorage.removeItem(voucherKey);
-                localStorage.removeItem('biterush_delivery');
-            }, { once: true });
+            const orderLink = orderButton.closest('a');
+            orderButton.disabled = cart.length === 0;
+            if (orderLink) {
+                if (!orderLink.dataset.completionHref) {
+                    orderLink.dataset.completionHref = orderLink.getAttribute('href') || '';
+                    orderLink.addEventListener('click', event => {
+                        if (!read().length) {
+                            event.preventDefault();
+                            return;
+                        }
+                        localStorage.removeItem(key);
+                        localStorage.removeItem(voucherKey);
+                        localStorage.removeItem('biterush_delivery');
+                    }, true);
+                }
+                orderLink.href = cart.length ? orderLink.dataset.completionHref : '#';
+                orderLink.setAttribute('aria-disabled', String(cart.length === 0));
+            }
         }
         }
     }
