@@ -58,9 +58,20 @@
         button.appendChild(badge);
     }
 
-    const isNestedPage = location.pathname.includes('/FoodDetails/') || location.pathname.includes('/BiteRushFoodMenuPages/');
-    const isRootPage = /(?:^|\/)index\.html$/.test(location.pathname) || /\/$/.test(location.pathname);
-    const checkoutPath = isNestedPage ? '../../DeliveryAddress/index.html' : isRootPage ? 'DeliveryAddress/index.html' : '../DeliveryAddress/index.html';
+    const pathname = location.pathname.replace(/\\/g, '/');
+    const isFoodDetailsPage = /\/FoodDetails\//i.test(pathname)
+        || /\/BiteRushHomePage\/FoodDetailsHome\//i.test(pathname);
+    const isMenuPage = /\/BiteRushFoodMenuPages\//i.test(pathname);
+    const isProjectRootPage = pathname === '/'
+        || /^\/index\.html$/i.test(pathname)
+        || /\/BiteRush\/(?:index\.html)?$/i.test(pathname);
+    const checkoutPath = isFoodDetailsPage
+        ? '../../../DeliveryAddress/index.html'
+        : isMenuPage
+            ? '../../DeliveryAddress/index.html'
+            : isProjectRootPage
+                ? 'DeliveryAddress/index.html'
+                : '../DeliveryAddress/index.html';
 
     const overlay = document.createElement('div');
     overlay.className = 'shared-cart-overlay';
@@ -131,7 +142,7 @@
     });
 
     const detailCard = document.querySelector('.item-card');
-    if (detailCard && !detailCard.querySelector('.shared-add-detail')) {
+    if (detailCard) {
         const detailImage = detailCard.querySelector('.item-img');
         const detailItem = () => ({
             key: location.pathname,
@@ -145,22 +156,30 @@
         const updateDetailQuantity = () => {
             if (detailQuantity) detailQuantity.textContent = getDetailQuantity() || 1;
         };
-        const detailAddButton = document.createElement('button');
-        detailAddButton.className = 'shared-add-detail';
-        detailAddButton.type = 'button';
-        detailAddButton.textContent = 'Add to cart';
-        detailCard.querySelector('.item-quantity-price')?.appendChild(detailAddButton);
-        detailAddButton.addEventListener('click', () => {
-            add(detailItem());
-            drawer.classList.add('open');
-            overlay.classList.add('open');
-            updateDetailQuantity();
-        });
-        detailCard.querySelectorAll('.qty-btn').forEach((control, index) => {
-            control.addEventListener('click', () => {
-                if (index === 1) add(detailItem());
-                else change(detailKey, -1);
+        if (!detailCard.querySelector('.shared-add-detail')) {
+            const detailAddButton = document.createElement('button');
+            detailAddButton.className = 'shared-add-detail';
+            detailAddButton.type = 'button';
+            detailAddButton.textContent = 'Add to cart';
+            detailCard.querySelector('.item-quantity-price')?.appendChild(detailAddButton);
+            detailAddButton.addEventListener('click', () => {
+                add(detailItem());
+                drawer.classList.add('open');
+                overlay.classList.add('open');
                 updateDetailQuantity();
+            });
+            detailCard.querySelectorAll('.qty-btn').forEach((control, index) => {
+                control.addEventListener('click', () => {
+                    if (index === 1) add(detailItem());
+                    else change(detailKey, -1);
+                    updateDetailQuantity();
+                });
+            });
+        }
+        document.querySelectorAll('.checkout-btn').forEach(checkoutButton => {
+            checkoutButton.addEventListener('click', () => {
+                if (!getDetailQuantity()) add(detailItem());
+                location.href = checkoutPath;
             });
         });
         updateDetailQuantity();
