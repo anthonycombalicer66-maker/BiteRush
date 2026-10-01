@@ -35,12 +35,11 @@
     const save = () => localStorage.setItem(deliveryKey, JSON.stringify(state));
     const update = () => {
         const subtotal = readCart().reduce((sum, item) => sum + Number(item.price) * Number(item.quantity), 0);
-        const fallbackSubtotal = subtotal || Number(document.querySelector('.summary-line span:last-child')?.textContent.replace(/[^\d.]/g, '')) || 0;
-        const discount = getVoucherDiscount(fallbackSubtotal);
-        const delivery = fallbackSubtotal ? Math.max(0, 4 + Number(state.adjustment || 0)) : 0;
-        const service = fallbackSubtotal ? 9 : 0;
+        const discount = getVoucherDiscount(subtotal);
+        const delivery = subtotal ? Math.max(0, 4 + Number(state.adjustment || 0)) : 0;
+        const service = subtotal ? 9 : 0;
         const tip = Math.max(0, Number(state.tip) || 0);
-        const total = Math.max(0, fallbackSubtotal - discount + delivery + service + tip);
+        const total = Math.max(0, subtotal - discount + delivery + service + tip);
         const deliveryLine = document.getElementById('deliveryFeeSummaryLine');
         if (deliveryLine) {
             const label = state.label === 'Schedule' ? 'Scheduled delivery' : `${state.label} delivery`;
@@ -51,7 +50,7 @@
             const label = line.querySelector('span:first-child')?.textContent.trim();
             const value = line.querySelector('span:last-child');
             if (!value) return;
-            if (label === 'Subtotal') value.textContent = money(fallbackSubtotal);
+            if (label === 'Subtotal') value.textContent = money(subtotal);
             if (label === 'Service fee') value.textContent = money(service);
         });
         const tipLine = document.getElementById('tipSummaryLine');
