@@ -57,7 +57,6 @@
         badge.className = 'shared-cart-badge';
         button.appendChild(badge);
     }
-
     const pathname = location.pathname.replace(/\\/g, '/');
     const isFoodDetailsPage = /\/FoodDetails\//i.test(pathname)
         || /\/BiteRushHomePage\/FoodDetailsHome\//i.test(pathname);
