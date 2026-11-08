@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../darkmode.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiteRush - Terms and Conditions</title>
+    <link rel="stylesheet" href="styleadd.css">
+    <link rel="stylesheet" href="../darkmode.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body>
+    <nav>
+        <a class="logo-section" aria-label="BiteRush home">
+            <img src="../BiteRushHomePage/HomePagePics/burger.png" alt="BiteRush Logo">
+            <h1>BiteRush</h1>
+        </a>
+    </nav>
+    <main class="page terms-page">
+        <a href="index.html" class="back-btn" id="termsBackButton" aria-label="Go back">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </a>
+        <section class="card">
+            <h1>Terms and conditions</h1>
+            <p>These terms explain how BiteRush orders, delivery, payment, and customer information are handled.</p>
+            <h2 class="section-title">Orders and payment</h2>
+            <p>Orders, feedback, menu settings, and delivery details are saved in this browser and are not sent to a restaurant or shared across devices. Cash and online payment selections do not process a payment.</p>
+            <h2 class="section-title">Delivery</h2>
+            <p>Delivery times and delivery options are estimates. Priority, Saver, Standard, and scheduled options may change the delivery charge shown in your order summary.</p>
+            <h2 class="section-title">Changes and cancellations</h2>
+            <p>Please review your order carefully before selecting Order now. Contact BiteRush as soon as possible if an order needs correction.</p>
+            <h2 class="section-title">Privacy</h2>
+            <p>Information entered during checkout remains in local browser storage. Do not enter real payment credentials or sensitive personal information. Clearing this browser’s site data can remove saved orders and settings.</p>
+            <h2 class="section-title">Contact and support</h2>
+            <p>No customer-support channel is currently available. Before accepting real orders, add a verified contact method and connect checkout to a secure backend.</p>
+        </section>
+    </main>
+    <script>
+        document.getElementById('termsBackButton').addEventListener('click', event => {
+            if (window.history.length > 1) {
+                event.preventDefault();
+                window.history.back();
+            }
+        });
+    </script>
+</body>
+</html>

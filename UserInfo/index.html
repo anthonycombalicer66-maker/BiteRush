@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../darkmode.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - BiteRush</title>
+    <link rel="stylesheet" href="UserInfoEditCss.css">
+    <link rel="stylesheet" href="../darkmode.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <a class="logo-section" href="../BiteRushHomePage/index.html" aria-label="BiteRush home">
+            <img src="../BiteRushHomePage/HomePagePics/burger.png" alt="BiteRush Logo">
+            <h1>BiteRush</h1>
+        </a>
+        <a class="user-profile" href="index.html" aria-label="User profile">
+            <img src="../BiteRushHomePage/HomePagePics/image%20108.png" alt="User Profile">
+        </a>
+    </nav>
+
+    <!-- Main Content Grid -->
+    <main class="settings-container">
+        
+        <!-- Back Button Area -->
+        <a href="../BiteRushHomePage/index.html" class="back-btn" aria-label="Go Back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </a>
+
+        <header class="settings-header">
+            <h2>Account Settings</h2>
+            <p>Update your profile details and appearance.</p>
+        </header>
+
+        <!-- White Card Box Content Split Layout -->
+        <div class="settings-card">
+            
+            <!-- Left Side form elements -->
+            <form id="profile-form" class="form-section" onsubmit="event.preventDefault();">
+                
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" value="" minlength="3" maxlength="24" pattern="[A-Za-z0-9_.]+" required disabled>
+                </div>
+
+                <div class="input-group">
+                    <label for="fullname">Your Name</label>
+                    <input type="text" id="fullname" value="" maxlength="80" required disabled>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" value="" maxlength="254" required disabled>
+                </div>
+                <p id="profile-message" class="profile-message" role="alert" aria-live="assertive" hidden></p>
+
+                <div class="theme-setting-row">
+                    <div>
+                        <strong>Dark Mode</strong>
+                        <p>Use a darker appearance across BiteRush.</p>
+                    </div>
+                    <label class="theme-switch" for="darkModeToggle">
+                        <input type="checkbox" id="darkModeToggle" aria-label="Enable dark mode">
+                        <span aria-hidden="true"></span>
+                    </label>
+                </div>
+
+                <!-- Action Button Control Row Container -->
+                <div class="action-buttons-row">
+                    <!-- Initially hidden buttons -->
+                    <button type="button" id="cancel-btn" class="secondary-btn hide-element">Cancel</button>
+                    <button type="button" id="confirm-btn" class="primary-btn hide-element">Confirm</button>
+                    
+                    <!-- Initially visible button -->
+                    <button type="button" id="edit-btn" class="primary-btn">Edit Information</button>
+                </div>
+
+                <button type="button" id="signout-btn" class="signout-btn">Sign out</button>
+                <button type="button" id="delete-account-btn" class="signout-btn">Delete account</button>
+            </form>
+
+            <!-- Right Side Profile Section -->
+            <div class="avatar-section">
+                <div class="avatar-wrapper">
+                    <!-- Recycled profile picture frame layout -->
+                    <img src="../BiteRushHomePage/HomePagePics/image%20108.png" alt="Big User Profile" data-biterush-profile-avatar="true">
+                    <div class="avatar-overlay-icons">
+                        <button type="button" class="icon-yellow" aria-label="Reset profile picture">🍔</button>
+                        <label class="icon-dark" for="profileImageInput" aria-label="Upload profile picture">📷</label>
+                        <input id="profileImageInput" type="file" accept="image/*" aria-label="Upload a profile photo">
+                    </div>
+                </div>
+                <strong id="avatar-handle"></strong>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- State Machine & Data Persistence Script Logic -->
+    <script>
+        // DOM Element selectors
+        const formInputs = document.querySelectorAll('#username, #fullname, #email');
+        const editBtn = document.getElementById('edit-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const confirmBtn = document.getElementById('confirm-btn');
+        const avatarHandle = document.getElementById('avatar-handle');
+        const profileMessage = document.getElementById('profile-message');
+        const profileImageInput = document.getElementById('profileImageInput');
+        const avatarImage = document.querySelector('.avatar-wrapper img');
+        const authSessionKey = 'biterush_demo_authenticated';
+        const accountStorageKey = 'biterush_demo_accounts';
+        const profileImageKey = 'biterush_profile_image';
+        const defaultProfileImage = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Crect width='160' height='160' rx='80' fill='%23f5c430'/%3E%3Ccircle cx='80' cy='62' r='26' fill='%23ffffff'/%3E%3Cpath d='M43 122c8-20 27-32 37-32s29 12 37 32' fill='%23ffffff'/%3E%3C/svg%3E";
+
+        let oldFormCache = {};
+
+        function updateSavedProfileImage(source) {
+            if (!source) return;
+            const profileImage = source.startsWith('data:') || source.startsWith('blob:') || source.startsWith('http') || source.startsWith('file:')
+                ? source
+                : new URL(source, window.location.href).href;
+            const accounts = JSON.parse(localStorage.getItem(accountStorageKey) || '[]');
+            const email = (localStorage.getItem('email') || '').toLowerCase();
+            const currentAccount = accounts.find(account => account.email && account.email.toLowerCase() === email);
+
+            localStorage.setItem(profileImageKey, profileImage);
+            if (avatarImage) avatarImage.src = profileImage;
+            if (currentAccount) {
+                currentAccount.profileImage = profileImage;
+                localStorage.setItem(accountStorageKey, JSON.stringify(accounts));
+            }
+        }
+
+        function applyCurrentProfileImage() {
+            const savedProfileImage = localStorage.getItem(profileImageKey) || defaultProfileImage;
+            if (avatarImage) avatarImage.src = savedProfileImage;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const email = localStorage.getItem('email') || '';
+            if (!email || localStorage.getItem(authSessionKey) !== email) {
+                window.location.replace('../Login/index.html');
+                return;
+            }
+            document.getElementById('username').value = localStorage.getItem('username') || '';
+            document.getElementById('fullname').value = localStorage.getItem('fullname') || '';
+            document.getElementById('email').value = localStorage.getItem('email') || '';
+            applyCurrentProfileImage();
+            avatarHandle.textContent = '@' + document.getElementById('username').value;
+        });
+
+        editBtn.addEventListener('click', () => {
+            formInputs.forEach(input => {
+                oldFormCache[input.id] = input.value;
+                input.removeAttribute('disabled');
+            });
+
+            formInputs[0].focus();
+            editBtn.classList.add('hide-element');
+            cancelBtn.classList.remove('hide-element');
+            confirmBtn.classList.remove('hide-element');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            formInputs.forEach(input => {
+                input.value = oldFormCache[input.id];
+                input.setAttribute('disabled', 'true');
+            });
+            profileMessage.hidden = true;
+            toggleActionInterface();
+        });
+
+        confirmBtn.addEventListener('click', () => {
+            profileMessage.hidden = true;
+            if (!document.getElementById('profile-form').reportValidity()) return;
+
+            try {
+                const username = document.getElementById('username').value.trim().toLowerCase();
+                const fullname = document.getElementById('fullname').value.trim();
+                const email = document.getElementById('email').value.trim().toLowerCase();
+                const accounts = JSON.parse(localStorage.getItem(accountStorageKey) || '[]');
+                const currentAccount = accounts.find(account => account.email === oldFormCache.email.toLowerCase());
+                if (!currentAccount) {
+                    profileMessage.textContent = 'Your account could not be found in this browser. Sign in again before editing your profile.';
+                    profileMessage.hidden = false;
+                    return;
+                }
+                const conflict = accounts.some(account =>
+                    account !== currentAccount &&
+                    (account.email === email || account.username === username)
+                );
+                if (conflict) {
+                    profileMessage.textContent = 'That email or username is already used by another account in this browser.';
+                    profileMessage.hidden = false;
+                    return;
+                }
+
+                currentAccount.username = username;
+                currentAccount.fullname = fullname;
+                currentAccount.email = email;
+                if (!currentAccount.profileImage) {
+                    currentAccount.profileImage = localStorage.getItem(profileImageKey) || defaultProfileImage;
+                }
+                localStorage.setItem(accountStorageKey, JSON.stringify(accounts));
+                localStorage.setItem('username', username);
+                localStorage.setItem('fullname', fullname);
+                localStorage.setItem('email', email);
+                localStorage.setItem(authSessionKey, email);
+                avatarHandle.textContent = '@' + username;
+                formInputs.forEach(input => input.setAttribute('disabled', 'true'));
+                toggleActionInterface();
+            } catch (error) {
+                profileMessage.textContent = error instanceof DOMException && error.name === 'QuotaExceededError'
+                    ? 'This browser is out of storage space. Free space and try again.'
+                    : 'Could not save your profile in this browser. Check storage permissions and try again.';
+                profileMessage.hidden = false;
+            }
+        });
+
+        document.querySelector('.icon-yellow').addEventListener('click', () => {
+            updateSavedProfileImage(defaultProfileImage);
+        });
+
+        profileImageInput.addEventListener('change', event => {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                updateSavedProfileImage(String(reader.result));
+                profileImageInput.value = '';
+            };
+            reader.onerror = () => {
+                profileMessage.textContent = 'The photo could not be loaded. Please choose a different image.';
+                profileMessage.hidden = false;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function toggleActionInterface() {
+            editBtn.classList.remove('hide-element');
+            cancelBtn.classList.add('hide-element');
+            confirmBtn.classList.add('hide-element');
+        }
+
+        document.getElementById('signout-btn').addEventListener('click', () => {
+            ['username', 'fullname', 'email', authSessionKey, profileImageKey].forEach(key => localStorage.removeItem(key));
+            window.location.href = '../Login/index.html';
+        });
+
+        document.getElementById('delete-account-btn').addEventListener('click', () => {
+            if (!window.confirm('Delete this account? Your profile will be permanently removed from this browser.')) return;
+            try {
+                const accounts = JSON.parse(localStorage.getItem(accountStorageKey) || '[]');
+                const currentEmail = (localStorage.getItem('email') || '').toLowerCase();
+                const retainedAccounts = accounts.filter(account =>
+                    !(account.email && account.email.toLowerCase() === currentEmail)
+                );
+                localStorage.setItem(accountStorageKey, JSON.stringify(retainedAccounts));
+                ['username', 'fullname', 'email', authSessionKey, profileImageKey].forEach(key =>
+                    localStorage.removeItem(key)
+                );
+                window.location.href = '../Login/index.html';
+            } catch (error) {
+                profileMessage.textContent = 'The account could not be deleted.';
+                profileMessage.hidden = false;
+                console.error('Unable to delete account:', error);
+            }
+        });
+    </script>
+</body>
+</html>
