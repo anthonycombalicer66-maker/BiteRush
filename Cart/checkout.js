@@ -13,6 +13,7 @@
         const read = () => {
             try {
                 const value = JSON.parse(localStorage.getItem(key) || '[]');
+                const overrides = JSON.parse(localStorage.getItem(overridesKey) || '{}');
                 return Array.isArray(value)
                     ? value
                         .filter(item => item && item.title && item.img)
