@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../darkmode.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffd233">
+    <title>Track your order - BiteRush</title>
+    <link rel="stylesheet" href="TrackOrder.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body>
+    <header class="top-nav">
+        <a class="brand"  aria-label="BiteRush home">
+            <img src="../BiteRushHomePage/HomePagePics/burger.png" alt="">
+            <span>BiteRush</span>
+        </a>
+        <a class="profile-link" href="../UserInfo/index.html" aria-label="User profile">
+            <img src="../BiteRushHomePage/HomePagePics/image%20108.png" alt="">
+        </a>
+    </header>
+
+    <main class="track-page">
+        <a class="back-link" href="../GobackHome/index.html" aria-label="Back to order receipt" title="Back to order receipt">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </a>
+        <section class="tracking-card" aria-labelledby="pageTitle">
+            <header class="tracking-header">
+                <span class="tracking-icon" aria-hidden="true">
+                    <svg viewBox="0 0 64 48">
+                        <g fill="currentColor">
+                            <path d="M1 20h8v1.5H1zm2 4h7v1.5H3zm3 4h6v1.5H6z" />
+                            <rect x="12" y="17" width="11" height="10" rx="1.5" />
+                            <path d="M17 35c1-6 4-9 9-10l4-7c1-2 3-2 4 0l3 5 5 1 3 5c-2 3-2 5-1 7h-5c0-4-2-6-5-6-3 0-5 2-5 6h-5c0-4-2-6-5-6s-5 2-5 5h-2zm10-12 5 1 2 4h-9z" />
+                            <circle cx="17" cy="36" r="6" />
+                            <circle cx="50" cy="36" r="6" />
+                            <circle cx="17" cy="36" r="2.5" fill="#fff3bf" />
+                            <circle cx="50" cy="36" r="2.5" fill="#fff3bf" />
+                            <circle cx="35" cy="8" r="4" />
+                            <path d="M32 11c-3 1-5 4-6 7l-3 6 5 3 4-6 2 5 7 3-2 5 4 2 5-8-2-4-6-3-2-6-5 4 2-5z" />
+                            <path d="M42 14c2-1 4 0 5 2l1 4-4 2-3-3z" />
+                            <path d="M33 27l-5 7 4 2 5-7z" />
+                            <path d="M23 17h9v2h-9z" />
+                        </g>
+                    </svg>
+                </span>
+                <p class="eyebrow">BITERUSH DELIVERY</p>
+                <h1 id="pageTitle">Track your order</h1>
+                <p class="order-number" id="orderNumber">Loading order details…</p>
+                <p class="estimated-arrival" id="estimatedArrival"></p>
+            </header>
+
+            <section class="tracking-status" id="trackingStatus" aria-labelledby="statusTitle">
+                <h2 id="statusTitle">Order progress</h2>
+                <ol class="tracking-steps">
+                    <li class="tracking-step" data-stage="received">
+                        <span class="step-marker">1</span>
+                        <span class="step-copy"><strong>Order received</strong><small>We’ve received your order.</small></span>
+                    </li>
+                    <li class="tracking-step" data-stage="preparing">
+                        <span class="step-marker">2</span>
+                        <span class="step-copy"><strong>Preparing</strong><small>The kitchen is preparing your food.</small></span>
+                    </li>
+                    <li class="tracking-step" data-stage="on_the_way">
+                        <span class="step-marker">3</span>
+                        <span class="step-copy"><strong>On the way</strong><small>Your rider is heading to you.</small></span>
+                    </li>
+                    <li class="tracking-step" data-stage="delivered">
+                        <span class="step-marker">4</span>
+                        <span class="step-copy"><strong>Delivered</strong><small>Your order has arrived.</small></span>
+                    </li>
+                </ol>
+                <p class="status-message" id="statusMessage" role="status"></p>
+                <p class="last-updated" id="lastUpdated"></p>
+                <button class="delivery-confirmation" id="confirmDelivery" type="button" hidden>
+                    Confirm delivery received
+                </button>
+                <a class="feedback-prompt" id="feedbackPrompt" href="../Feedback/index.html" hidden>
+                    Rate your order
+                </a>
+            </section>
+
+            <section class="delivery-summary" aria-label="Delivery details">
+                <div>
+                    <h2>Delivering to</h2>
+                    <p id="deliveryAddress">—</p>
+                </div>
+                <div>
+                    <h2>Payment</h2>
+                    <p id="paymentMethod">—</p>
+                </div>
+            </section>
+
+            <nav class="tracking-actions" aria-label="Order navigation">
+                <a class="action-button action-primary" href="../GobackHome/index.html">View receipt</a>
+                <a class="action-button action-secondary" href="../index.html">Back to menu</a>
+                <a class="action-button action-secondary" href="../DeliveryAddress/terms.html">Terms &amp; privacy</a>
+            </nav>
+            <p class="tracking-disclaimer">Order status is based on the latest information available on this device.</p>
+        </section>
+    </main>
+
+    <script>
+        (function () {
+            const receiptKey = 'biterush_last_order';
+            const stages = ['received', 'preparing', 'on_the_way', 'delivered'];
+            const notes = {
+                received: 'We’ve received your order and are getting it ready.',
+                preparing: 'The kitchen is preparing your order.',
+                on_the_way: 'Your order is on the way.',
+                delivered: 'Your order has been delivered. Enjoy!',
+                cancelled: 'This order was cancelled.'
+            };
+
+            const render = () => {
+                let receipt = null;
+                try {
+                    receipt = JSON.parse(localStorage.getItem(receiptKey) || 'null');
+                } catch (error) {
+                    console.error('Unable to read order tracking details:', error);
+                }
+
+                const number = document.getElementById('orderNumber');
+                const tracking = document.getElementById('trackingStatus');
+                const actions = document.querySelector('.tracking-actions');
+                const confirmDelivery = document.getElementById('confirmDelivery');
+                const feedbackPrompt = document.getElementById('feedbackPrompt');
+                if (!receipt || !Array.isArray(receipt.items) || receipt.items.length === 0) {
+                    number.textContent = 'No recent order was found.';
+                    tracking.hidden = true;
+                    actions.hidden = true;
+                    confirmDelivery.hidden = true;
+                    feedbackPrompt.hidden = true;
+                    document.getElementById('estimatedArrival').textContent =
+                        'Place an order to see its delivery progress.';
+                    document.getElementById('deliveryAddress').textContent = '—';
+                    document.getElementById('paymentMethod').textContent = '—';
+                    return;
+                }
+
+                number.textContent = `Order #${receipt.id || '—'}`;
+                const cancelled = receipt.status === 'cancelled';
+                const etaDate = receipt.etaAt ? new Date(receipt.etaAt) : null;
+                const eta = etaDate && !Number.isNaN(etaDate.getTime())
+                    ? `${etaDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} (${receipt.eta || 'estimated'})`
+                    : receipt.eta || '20–45 minutes';
+                document.getElementById('estimatedArrival').textContent = cancelled
+                    ? 'Estimated arrival: not applicable'
+                    : `Estimated arrival: ${eta}`;
+                document.getElementById('deliveryAddress').textContent =
+                    receipt.address || 'No address provided';
+                document.getElementById('paymentMethod').textContent = receipt.payment || '—';
+
+                const currentStage = stages.indexOf(receipt.status);
+                const stageIndex = currentStage < 0 ? 0 : currentStage;
+                document.querySelector('.tracking-steps').hidden = cancelled;
+                document.querySelectorAll('.tracking-step').forEach((step, index) => {
+                    step.classList.toggle('is-done', index < stageIndex);
+                    step.classList.toggle('is-current', index === stageIndex);
+                    if (index === stageIndex) {
+                        step.setAttribute('aria-current', 'step');
+                    } else {
+                        step.removeAttribute('aria-current');
+                    }
+                });
+                document.getElementById('statusMessage').textContent = cancelled
+                    ? `${notes.cancelled}${receipt.cancellationReason ? ` Reason: ${receipt.cancellationReason}` : ''}`
+                    : notes[stages[stageIndex]];
+                confirmDelivery.hidden = cancelled || stageIndex >= stages.length - 1;
+                feedbackPrompt.hidden = cancelled || stageIndex !== stages.length - 1;
+                feedbackPrompt.href = `../Feedback/index.html?order=${encodeURIComponent(receipt.id || '')}`;
+
+                const updatedAt = receipt.updatedAt || receipt.createdAt;
+                const updatedDate = updatedAt ? new Date(updatedAt) : null;
+                document.getElementById('lastUpdated').textContent =
+                    updatedDate && !Number.isNaN(updatedDate.getTime())
+                        ? `Last updated ${updatedDate.toLocaleString()}`
+                        : '';
+            };
+
+            document.getElementById('confirmDelivery').addEventListener('click', () => {
+                let receipt;
+                try {
+                    receipt = JSON.parse(localStorage.getItem(receiptKey) || 'null');
+                } catch (error) {
+                    console.error('Unable to update delivery status:', error);
+                    return;
+                }
+                if (!receipt || !Array.isArray(receipt.items) || receipt.status === 'cancelled') return;
+
+                receipt.status = 'delivered';
+                receipt.updatedAt = new Date().toISOString();
+                try {
+                    const orders = JSON.parse(localStorage.getItem('biterush_orders') || '[]');
+                    if (!Array.isArray(orders)) {
+                        throw new Error('Saved order history is not a valid list.');
+                    }
+                    const orderIndex = orders.findIndex(order => order && order.id === receipt.id);
+                    if (orderIndex === -1) {
+                        orders.unshift(receipt);
+                    } else {
+                        orders[orderIndex] = { ...orders[orderIndex], ...receipt };
+                    }
+                    localStorage.setItem('biterush_orders', JSON.stringify(orders));
+                    localStorage.setItem(receiptKey, JSON.stringify(receipt));
+                } catch (error) {
+                    console.error('Unable to save delivery confirmation:', error);
+                    window.alert('Could not save the delivery confirmation. Please try again.');
+                    return;
+                }
+                render();
+            });
+
+            render();
+            window.addEventListener('storage', event => {
+                if (event.key === receiptKey) render();
+            });
+        }());
+    </script>
+</body>
+</html>

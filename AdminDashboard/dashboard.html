@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17202a">
+    <title>BiteRush - Admin Dashboard</title>
+    <link rel="stylesheet" href="../DeliveryAddress/styleadd.css">
+    <link rel="stylesheet" href="./dashboard.css">
+    <link rel="stylesheet" href="../darkmode.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body>
+    <div id="dashboardView" hidden>
+        <nav class="admin-nav">
+            <a class="logo-section" aria-label="BiteRush home">
+                <img src="../BiteRushHomePage/HomePagePics/burger.png" alt="">
+                <h1>BiteRush Admin</h1>
+            </a>
+            <button class="dashboard-logout" id="adminLogout" type="button">Sign out</button>
+        </nav>
+
+        <main class="admin-dashboard">
+            <header class="dashboard-heading">
+                <div>
+                    <p class="dashboard-eyebrow">BITERUSH ADMIN</p>
+                    <h2>Dashboard</h2>
+                    <p>Orders, menu, and customer feedback in one place.</p>
+                </div>
+                <div class="dashboard-heading-actions">
+                    <span class="session-role" id="sessionRole">Administrator</span>
+                    <span class="session-role" id="sessionTimeoutStatus">Session active</span>
+                    <a class="dash-back" href="../BiteRushHomePage/index.html">Back to site</a>
+                </div>
+            </header>
+
+            <p class="storage-warning" id="storageWarning" role="alert" aria-live="polite" hidden></p>
+            <section class="admin-panel data-tools-panel" data-admin-only aria-labelledby="dataToolsTitle">
+                <div class="panel-heading">
+                    <div>
+                        <p class="dashboard-eyebrow">LOCAL DATA</p>
+                        <h2 id="dataToolsTitle">Backup and restore</h2>
+                    </div>
+                </div>
+                <p class="panel-description">Export or restore BiteRush data stored in this browser, including orders, feedback, and menu settings.</p>
+                <div class="data-tool-actions">
+                    <button class="admin-primary-button" id="exportDataButton" type="button">Download backup</button>
+                    <label class="file-import-button" for="importDataFile">Restore from backup</label>
+                    <input class="visually-hidden" id="importDataFile" type="file" accept="application/json,.json">
+                </div>
+                <p class="inline-message" id="dataToolsMessage" role="status" aria-live="polite" hidden></p>
+            </section>
+
+            <section class="admin-metrics" aria-label="Order and customer metrics">
+                <article class="metric-card"><span>Orders today</span><strong id="metricOrders">0</strong></article>
+                <article class="metric-card"><span>Sales today</span><strong id="metricSales">₱0</strong></article>
+                <article class="metric-card"><span>Needs attention</span><strong id="metricPending">0</strong></article>
+                <article class="metric-card"><span>Average rating</span><strong id="metricRating">—</strong></article>
+            </section>
+
+            <section class="admin-panel report-panel" aria-labelledby="reportTitle">
+                <div class="panel-heading">
+                    <div>
+                        <p class="dashboard-eyebrow">BUSINESS OVERVIEW</p>
+                        <h2 id="reportTitle">Sales report</h2>
+                    </div>
+                </div>
+                <div class="report-date-controls">
+                    <label for="reportStart">From <input id="reportStart" type="date"></label>
+                    <label for="reportEnd">To <input id="reportEnd" type="date"></label>
+                    <button class="admin-primary-button" id="runReportButton" type="button">Update report</button>
+                </div>
+                <p class="report-summary" id="reportSummary"></p>
+                <div class="report-actions">
+                    <button class="table-action-button" id="exportReportCsvButton" type="button">Export report CSV</button>
+                </div>
+                <div class="report-chart-grid" aria-label="Sales charts">
+                    <section class="report-chart-card" aria-labelledby="revenueChartTitle">
+                        <div class="report-chart-heading">
+                            <h3 id="revenueChartTitle">Sales trend</h3>
+                            <span class="chart-legend"><span class="chart-legend-line"></span>Sales (₱)</span>
+                        </div>
+                        <div class="report-chart" id="revenueChart"></div>
+                    </section>
+                    <section class="report-chart-card" aria-labelledby="ordersChartTitle">
+                        <div class="report-chart-heading">
+                            <h3 id="ordersChartTitle">Orders by period</h3>
+                            <span class="chart-legend"><span class="chart-legend-bar"></span>Orders</span>
+                        </div>
+                        <div class="report-chart" id="ordersChart"></div>
+                    </section>
+                </div>
+                <h3 class="report-subheading">Popular dishes in range</h3>
+                <ol class="popular-dishes" id="popularDishes"></ol>
+            </section>
+
+            <section class="admin-panel" aria-labelledby="ordersTitle">
+                <div class="panel-heading">
+                    <div>
+                        <p class="dashboard-eyebrow">FULFILLMENT</p>
+                        <h2 id="ordersTitle">Orders</h2>
+                    </div>
+                    <span class="panel-count" id="orderCount">0 orders</span>
+                </div>
+                <div class="orders-layout">
+                    <div class="orders-list-column">
+                        <div class="orders-toolbar">
+                            <label class="visually-hidden" for="orderSearch">Search orders</label>
+                            <input id="orderSearch" type="search" placeholder="Search order or address">
+                            <label class="visually-hidden" for="orderFilter">Filter by status</label>
+                            <select id="orderFilter">
+                                <option value="all">All statuses</option>
+                                <option value="received">Order received</option>
+                                <option value="preparing">Preparing</option>
+                                <option value="on_the_way">On the way</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                                <button class="table-action-button" id="selectAllOrdersButton" type="button">Select all</button>
+                        </div>
+                        <div class="bulk-order-actions" id="bulkOrderActions" hidden>
+                                <strong><span id="selectedOrderCount">0</span> selected</strong>
+                                <label class="visually-hidden" for="bulkOrderStatus">Bulk status</label>
+                                <select id="bulkOrderStatus">
+                                    <option value="preparing">Preparing</option>
+                                    <option value="on_the_way">On the way</option>
+                                    <option value="delivered">Delivered</option>
+                                </select>
+                                <button class="admin-primary-button" id="applyBulkStatusButton" type="button">Apply status</button>
+                                <button class="table-action-button" id="clearSelectedOrdersButton" type="button">Clear</button>
+                        </div>
+                        <div id="ordersList" class="admin-orders-list" aria-live="polite"></div>
+                        <div class="pagination" id="ordersPagination"></div>
+                    </div>
+                    <section class="order-detail-panel" id="orderDetail" aria-label="Selected order details">
+                        <p class="empty-panel">Select an order to view its details.</p>
+                    </section>
+                </div>
+                <p class="new-order-notice" id="newOrderNotice" role="status" aria-live="polite" hidden></p>
+            </section>
+
+            <section class="admin-panel" aria-labelledby="productsTitle">
+                <div class="panel-heading">
+                    <div>
+                        <p class="dashboard-eyebrow">MENU</p>
+                        <h2 id="productsTitle">Product management</h2>
+                    </div>
+                </div>
+                <p class="panel-description">Create dishes, update menu settings, and move dishes to or from the recycle bin.</p>
+                <form class="add-product-form" id="addProductForm">
+                    <label for="newProductName">Add a featured dish</label>
+                    <input id="newProductName" name="title" type="text" maxlength="60" placeholder="Dish name" required>
+                    <label for="newProductCategory" class="visually-hidden">Category</label>
+                    <input id="newProductCategory" name="category" type="text" maxlength="50" placeholder="Category" required>
+                    <label for="newProductPrice" class="visually-hidden">New dish price in pesos</label>
+                    <input id="newProductPrice" name="price" type="number" min="0.01" step="0.01" placeholder="Price (₱)" required>
+                    <label for="newProductDescription" class="visually-hidden">Dish description</label>
+                    <input id="newProductDescription" name="description" type="text" maxlength="180" placeholder="Short description (optional)">
+                    <label for="newProductImage" class="visually-hidden">Dish image address</label>
+                    <input id="newProductImage" name="image" type="text" maxlength="300" placeholder="Image URL (optional)">
+                    <label for="newProductStock" class="visually-hidden">Stock quantity</label>
+                    <input id="newProductStock" name="stock" type="number" min="0" step="1" placeholder="Stock quantity">
+                    <label for="newProductPrepTime" class="visually-hidden">Preparation time</label>
+                    <input id="newProductPrepTime" name="prepTime" type="number" min="0" step="1" placeholder="Prep time (minutes)">
+                    <label for="newProductSku" class="visually-hidden">SKU</label>
+                    <input id="newProductSku" name="sku" type="text" maxlength="40" placeholder="SKU (optional)">
+                    <button class="admin-primary-button" type="submit">Add dish</button>
+                </form>
+                <div class="menu-undo-row">
+                    <p class="inline-message" id="productMessage" role="status" aria-live="polite" hidden></p>
+                    <button class="table-action-button" id="undoProductButton" type="button" disabled>Undo last menu change</button>
+                </div>
+                <div class="products-toolbar">
+                    <label class="visually-hidden" for="productSearch">Search menu</label>
+                    <input id="productSearch" type="search" placeholder="Search dishes">
+                    <label class="visually-hidden" for="productStatusFilter">Filter menu status</label>
+                    <select id="productStatusFilter">
+                        <option value="all">All dishes</option>
+                        <option value="available">Available</option>
+                        <option value="unavailable">Unavailable</option>
+                        <option value="deleted">Recycle bin</option>
+                    </select>
+                    <label class="visually-hidden" for="productCategoryFilter">Filter by category</label>
+                    <select id="productCategoryFilter">
+                        <option value="all">All categories</option>
+                    </select>
+                    <label class="visually-hidden" for="productStockFilter">Filter by stock</label>
+                    <select id="productStockFilter">
+                        <option value="all">All stock levels</option>
+                        <option value="low">Low stock</option>
+                        <option value="out">Out of stock</option>
+                        <option value="unlimited">Unlimited stock</option>
+                    </select>
+                    <label class="visually-hidden" for="productLifecycleFilter">Filter by lifecycle</label>
+                    <select id="productLifecycleFilter">
+                        <option value="all">All states</option>
+                        <option value="active">Active</option>
+                        <option value="draft">Draft</option>
+                        <option value="archived">Archived</option>
+                        <option value="discontinued">Discontinued</option>
+                    </select>
+                    <label class="visually-hidden" for="productSort">Sort products</label>
+                    <select id="productSort">
+                        <option value="name">Sort: Name</option>
+                        <option value="category">Sort: Category</option>
+                        <option value="price-low">Sort: Price low to high</option>
+                        <option value="price-high">Sort: Price high to low</option>
+                        <option value="stock-low">Sort: Stock low to high</option>
+                        <option value="updated">Sort: Recently updated</option>
+                    </select>
+                </div>
+                <div class="bulk-product-actions" id="bulkProductActions" hidden>
+                    <div class="bulk-selection-header">
+                        <strong><span id="selectedProductCount">0</span> dishes selected</strong>
+                        <button class="table-action-button bulk-clear-button" id="clearSelectedProducts" type="button">Clear selection</button>
+                    </div>
+                    <div class="bulk-action-group bulk-availability-actions">
+                        <span class="bulk-group-title">Availability</span>
+                        <div class="bulk-group-controls">
+                            <button class="table-action-button" id="bulkProductAvailable" type="button">Mark available</button>
+                            <button class="table-action-button" id="bulkProductUnavailable" type="button">Mark unavailable</button>
+                        </div>
+                    </div>
+                    <div class="bulk-action-group bulk-field-action bulk-category-action">
+                        <span class="bulk-group-title">Category</span>
+                        <div class="bulk-field-controls">
+                            <label class="visually-hidden" for="bulkProductCategory">New category</label>
+                            <input id="bulkProductCategory" type="text" maxlength="50" placeholder="New category">
+                            <button class="table-action-button" id="bulkProductCategoryButton" type="button">Apply</button>
+                        </div>
+                    </div>
+                    <div class="bulk-action-group bulk-field-action bulk-price-action">
+                        <span class="bulk-group-title">Price</span>
+                        <div class="bulk-field-controls">
+                            <label class="visually-hidden" for="bulkProductPrice">New price</label>
+                            <input id="bulkProductPrice" type="number" min="0.01" step="0.01" placeholder="₱0.00">
+                            <button class="table-action-button" id="bulkProductPriceButton" type="button">Apply</button>
+                        </div>
+                    </div>
+                    <div class="bulk-action-group bulk-field-action bulk-stock-action">
+                        <span class="bulk-group-title">Stock</span>
+                        <div class="bulk-field-controls">
+                            <label class="visually-hidden" for="bulkProductStock">New stock quantity</label>
+                            <input id="bulkProductStock" type="number" min="0" step="1" placeholder="Quantity">
+                            <button class="table-action-button" id="bulkProductStockButton" type="button">Apply</button>
+                        </div>
+                    </div>
+                    <div class="bulk-action-group bulk-recycle-actions">
+                        <span class="bulk-group-title">Recycle bin</span>
+                        <div class="bulk-group-controls">
+                            <button class="table-action-button table-remove-button" id="bulkProductRecycle" type="button">Recycle selected</button>
+                            <button class="table-action-button" id="bulkProductRestore" type="button">Restore selected</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-data-actions">
+                    <button class="table-action-button" id="exportMenuCsv" type="button">Export menu CSV</button>
+                    <label class="file-import-button" for="importMenuCsv">Import menu CSV</label>
+                    <input class="visually-hidden" id="importMenuCsv" type="file" accept=".csv,text/csv">
+                    <button class="table-action-button" id="printMenuButton" type="button">Print menu</button>
+                </div>
+                <div class="table-scroll">
+                    <table class="admin-table">
+                        <thead><tr><th scope="col"><input id="selectAllProducts" type="checkbox" aria-label="Select all visible dishes"></th><th scope="col">Dish</th><th scope="col">Category</th><th scope="col">Description</th><th scope="col">Price (₱)</th><th scope="col">Availability</th><th scope="col">Stock</th><th scope="col">Prep</th><th scope="col">SKU</th><th scope="col">Image</th><th scope="col">Sales</th><th scope="col">Action</th></tr></thead>
+                        <tbody id="productsList"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="productsPagination"></div>
+            </section>
+
+            <section class="admin-panel" data-admin-only aria-labelledby="auditTitle">
+                <div class="panel-heading">
+                    <div>
+                        <p class="dashboard-eyebrow">SECURITY</p>
+                        <h2 id="auditTitle">Audit log</h2>
+                    </div>
+                    <button class="table-action-button" id="exportAuditButton" type="button">Export audit log</button>
+                </div>
+                <label for="auditSearch">Search audit history</label>
+                <input id="auditSearch" type="search" placeholder="Actor, action, entity, or detail">
+                <div class="audit-log" id="auditLog"></div>
+            </section>
+
+            <section class="admin-panel" aria-labelledby="feedbackTitle">
+                <div class="panel-heading">
+                    <div>
+                        <p class="dashboard-eyebrow">CUSTOMER VOICE</p>
+                        <h2 id="feedbackTitle">Feedback</h2>
+                    </div>
+                    <span class="panel-count" id="feedbackCount">0 reviews</span>
+                </div>
+                <div class="feedback-filters">
+                    <label for="feedbackFilter">Show feedback
+                        <select id="feedbackFilter">
+                            <option value="all">All ratings</option>
+                            <option value="low">Low ratings (1–2 stars)</option>
+                        </select>
+                    </label>
+                    <label for="feedbackSort">Sort
+                        <select id="feedbackSort">
+                            <option value="newest">Newest first</option>
+                            <option value="lowest">Lowest rating first</option>
+                        </select>
+                    </label>
+                    <label for="feedbackSearch">Search
+                        <input id="feedbackSearch" type="search" placeholder="Comment, order, or customer">
+                    </label>
+                </div>
+                <div class="feedback-list" id="feedbackList"></div>
+            </section>
+        </main>
+    </div>
+    <dialog class="product-edit-dialog" id="productEditDialog">
+        <form method="dialog" id="productEditForm">
+            <div class="product-dialog-heading">
+                <div>
+                    <p class="dashboard-eyebrow">MENU PRODUCT</p>
+                    <h2>Edit product</h2>
+                </div>
+                <button class="product-dialog-close" value="cancel" aria-label="Close editor">&times;</button>
+            </div>
+            <div class="product-dialog-grid">
+                <div class="product-edit-fields">
+                    <input id="editProductKey" type="hidden">
+                    <label>Name <input id="editProductName" maxlength="60" required></label>
+                    <label>Category <input id="editProductCategory" maxlength="50" required></label>
+                    <label>Price (₱) <input id="editProductPrice" type="number" min="0.01" step="0.01" required></label>
+                    <label>Stock (blank = unlimited) <input id="editProductStock" type="number" min="0" step="1"></label>
+                    <label>Preparation time (minutes) <input id="editProductPrepTime" type="number" min="0" step="1"></label>
+                    <label>SKU <input id="editProductSku" maxlength="40"></label>
+                    <label>Barcode / GTIN <input id="editProductBarcode" maxlength="60"></label>
+                    <label>Cost price (₱) <input id="editProductCost" type="number" min="0" step="0.01"></label>
+                    <label>Low-stock threshold <input id="editProductLowStock" type="number" min="0" step="1"></label>
+                    <label>Lifecycle state
+                        <select id="editProductLifecycle">
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                            <option value="archived">Archived</option>
+                            <option value="discontinued">Discontinued</option>
+                        </select>
+                    </label>
+                    <label>Description <textarea id="editProductDescription" maxlength="180"></textarea></label>
+                    <label>Allergens <input id="editProductAllergens" maxlength="180" placeholder="e.g. Milk, peanuts"></label>
+                    <label>Dietary tags <input id="editProductTags" maxlength="180" placeholder="e.g. Halal, Vegan"></label>
+                    <label>Variants (one per line) <textarea id="editProductVariants" maxlength="600" placeholder="Small | +0&#10;Large | +50"></textarea></label>
+                    <label>Add-ons (one per line) <textarea id="editProductAddons" maxlength="600" placeholder="Extra rice | +30&#10;Extra sauce | +10"></textarea></label>
+                    <label>Kitchen / delivery notes <textarea id="editProductNotes" maxlength="300"></textarea></label>
+                    <label>Scheduled from <input id="editProductScheduleStart" type="datetime-local"></label>
+                    <label>Scheduled until <input id="editProductScheduleEnd" type="datetime-local"></label>
+                    <label>Image URL <input id="editProductImage" maxlength="300"></label>
+                    <label>Upload image <input id="editProductImageUpload" type="file" accept="image/*"></label>
+                    <label class="availability-control"><input id="editProductAvailable" type="checkbox"> Available</label>
+                </div>
+                <aside class="product-preview">
+                    <strong>Card preview</strong>
+                    <img id="editProductPreviewImage" alt="">
+                    <h3 id="editProductPreviewName"></h3>
+                    <p id="editProductPreviewDescription"></p>
+                    <div><span id="editProductPreviewCategory"></span><strong id="editProductPreviewPrice"></strong></div>
+                </aside>
+            </div>
+            <p class="inline-message" id="editProductMessage" role="alert" hidden></p>
+            <div class="product-dialog-actions">
+                <button class="table-action-button" value="cancel">Cancel</button>
+                <button class="admin-primary-button" id="saveProductEdit" value="default" type="button">Save product</button>
+            </div>
+        </form>
+    </dialog>
+    <script src="../SearchResults/search-results-data.js"></script>
+    <script src="./dashboard.js" defer></script>
+</body>
+</html>

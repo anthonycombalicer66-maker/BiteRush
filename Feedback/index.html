@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../darkmode.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffd233">
+    <title>Food ratings - BiteRush</title>
+    <link rel="stylesheet" href="Feedback.css">
+    <link rel="stylesheet" href="../darkmode.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body>
+    <header class="top-nav">
+        <a class="brand" href="../index.html" aria-label="BiteRush home">
+            <img src="../BiteRushHomePage/HomePagePics/burger.png" alt="">
+            <span>BiteRush</span>
+        </a>
+        <a class="profile-link" href="../UserInfo/index.html" aria-label="User profile">
+            <img src="../BiteRushHomePage/HomePagePics/image%20108.png" alt="">
+        </a>
+    </header>
+
+    <main class="feedback-page">
+        <a class="back-link" id="backLink" href="../TrackOrder/index.html" aria-label="Go back">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </a>
+
+        <section id="productReviews" class="reviews-card" aria-labelledby="reviewsTitle" hidden>
+            <header class="reviews-heading">
+                <span class="feedback-icon" aria-hidden="true">★</span>
+                <p class="eyebrow">BITERUSH CUSTOMER REVIEWS</p>
+                <h1 id="reviewsTitle">Ratings for <span id="reviewFoodName"></span></h1>
+                <p class="reviews-intro">See what customers thought about this food.</p>
+            </header>
+
+            <div class="rating-overview">
+                <div class="rating-score">
+                    <strong id="averageRating">0.0</strong>
+                    <div id="averageStars" class="summary-stars" aria-label="No ratings yet"></div>
+                    <p id="reviewCount">0 ratings</p>
+                </div>
+                <div id="ratingBreakdown" class="rating-breakdown" aria-label="Filter reviews by star rating"></div>
+            </div>
+
+            <div class="review-toolbar">
+                <h2>Customer reviews</h2>
+                <label for="reviewSort">Sort by</label>
+                <select id="reviewSort">
+                    <option value="newest">Most recent</option>
+                    <option value="highest">Highest rated</option>
+                    <option value="lowest">Lowest rated</option>
+                </select>
+            </div>
+            <p id="reviewFilterStatus" class="review-filter-status" hidden>
+                <span id="reviewFilterLabel"></span>
+                <button id="clearRatingFilter" type="button">Show all ratings</button>
+            </p>
+            <div id="reviewList" class="review-list" aria-live="polite"></div>
+            <p id="noReviews" class="empty-reviews" hidden>
+                No ratings yet for this food. Be the first to review it after a delivered order.
+            </p>
+            <p id="reviewStorageNote" class="review-storage-note">
+                Ratings shown here come from delivered orders saved in this browser.
+            </p>
+            <p id="reviewError" class="form-error" role="alert" hidden></p>
+        </section>
+
+        <section class="feedback-card order-feedback" aria-labelledby="pageTitle">
+            <div class="feedback-heading">
+                <span class="feedback-icon" aria-hidden="true">★</span>
+                <p id="feedbackEyebrow" class="eyebrow">YOUR FEEDBACK MATTERS</p>
+                <h1 id="pageTitle">How was your order?</h1>
+                <p id="orderNumber" class="order-number"></p>
+            </div>
+
+            <div id="feedbackUnavailable" class="notice" role="status" hidden>
+                <p id="feedbackUnavailableMessage">
+                    Feedback is available after you confirm your order was delivered.
+                </p>
+                <a href="../TrackOrder/index.html">Go to order tracking</a>
+            </div>
+
+            <form id="feedbackForm" hidden>
+                <fieldset id="foodItemGroup" class="rating-group" hidden>
+                    <legend>Which food are you reviewing? <span aria-hidden="true">*</span></legend>
+                    <select id="foodItemSelect" name="foodItem" aria-label="Food to review"></select>
+                </fieldset>
+
+                <fieldset class="rating-group">
+                    <legend>How was the food? <span aria-hidden="true">*</span></legend>
+                    <div class="star-rating" role="radiogroup" aria-label="Food rating">
+                        <input id="food5" name="foodRating" type="radio" value="5" required>
+                        <label for="food5" aria-label="5 stars">★</label>
+                        <input id="food4" name="foodRating" type="radio" value="4">
+                        <label for="food4" aria-label="4 stars">★</label>
+                        <input id="food3" name="foodRating" type="radio" value="3">
+                        <label for="food3" aria-label="3 stars">★</label>
+                        <input id="food2" name="foodRating" type="radio" value="2">
+                        <label for="food2" aria-label="2 stars">★</label>
+                        <input id="food1" name="foodRating" type="radio" value="1">
+                        <label for="food1" aria-label="1 star">★</label>
+                    </div>
+                </fieldset>
+
+                <fieldset id="deliveryRatingGroup" class="rating-group">
+                    <legend>How was the delivery? <span aria-hidden="true">*</span></legend>
+                    <div class="star-rating" role="radiogroup" aria-label="Delivery rating">
+                        <input id="delivery5" name="deliveryRating" type="radio" value="5" required>
+                        <label for="delivery5" aria-label="5 stars">★</label>
+                        <input id="delivery4" name="deliveryRating" type="radio" value="4">
+                        <label for="delivery4" aria-label="4 stars">★</label>
+                        <input id="delivery3" name="deliveryRating" type="radio" value="3">
+                        <label for="delivery3" aria-label="3 stars">★</label>
+                        <input id="delivery2" name="deliveryRating" type="radio" value="2">
+                        <label for="delivery2" aria-label="2 stars">★</label>
+                        <input id="delivery1" name="deliveryRating" type="radio" value="1">
+                        <label for="delivery1" aria-label="1 star">★</label>
+                    </div>
+                </fieldset>
+
+                <label class="comment-label" for="feedbackComment">Tell us more <span>(optional)</span></label>
+                <textarea id="feedbackComment" name="comment" maxlength="500"
+                    placeholder="What did you enjoy? What could we improve?" rows="4"></textarea>
+                <p class="character-count"><span id="characterCount">0</span>/500</p>
+                <p class="form-error" id="formError" role="alert" hidden></p>
+                <button class="submit-button" type="submit">Submit feedback</button>
+            </form>
+
+            <section id="feedbackSuccess" class="feedback-success" role="status" hidden>
+                <span aria-hidden="true">✓</span>
+                <h2>Thanks for sharing!</h2>
+                <p id="feedbackSuccessMessage">Your feedback has been saved on this device.</p>
+                <a class="menu-button" href="../index.html">Back to menu</a>
+            </section>
+
+            <nav class="feedback-footer" aria-label="Feedback page navigation">
+                <a href="../GobackHome/index.html">View receipt</a>
+                <a href="../TrackOrder/index.html">Track order</a>
+                <a href="../DeliveryAddress/terms.html">Terms &amp; privacy</a>
+            </nav>
+        </section>
+    </main>
+
+    <script src="Feedback.js" defer></script>
+</body>
+</html>

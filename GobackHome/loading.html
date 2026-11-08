@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffd233">
+    <title>Preparing your order - BiteRush</title>
+    <link rel="stylesheet" href="Loading.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body>
+    <header class="top-nav">
+        <a class="brand" aria-label="BiteRush home">
+            <img src="../BiteRushHomePage/HomePagePics/burger.png" alt="">
+            <span>BiteRush</span>
+        </a>
+        <a class="profile-link" href="../UserInfo/index.html" aria-label="User profile">
+            <img src="../BiteRushHomePage/HomePagePics/image%20108.png" alt="">
+        </a>
+    </header>
+    <main class="loading-screen" aria-labelledby="loadingTitle">
+        <div class="loading-content">
+            <img class="loading-burger" src="../Login/Pics/burger.png" alt="">
+            <div class="loading-status" role="status" aria-live="polite">
+                <span class="loading-spinner" aria-hidden="true"></span>
+                <h1 id="loadingTitle">Preparing your order</h1>
+                <span class="loading-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            </div>
+            <div class="loading-track" aria-hidden="true">
+                <span class="loading-progress"></span>
+            </div>
+        </div>
+    </main>
+    <script>
+        window.setTimeout(() => {
+            window.location.replace('index.html');
+        }, 1800);
+    </script>
+</body>
+</html>

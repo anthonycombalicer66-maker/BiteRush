@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17202a">
+    <title>Staff Sign In | BiteRush</title>
+    <link rel="stylesheet" href="Staff.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body>
+    <header class="staff-header">
+        <a class="staff-brand" href="../BiteRushHomePage/index.html" aria-label="BiteRush home">
+            <img src="../BiteRushHomePage/HomePagePics/burger.png" alt="">
+            <span>BiteRush</span>
+        </a>
+        <span class="staff-label">STAFF PORTAL</span>
+    </header>
+
+    <main class="staff-main">
+        <section class="staff-card" aria-labelledby="staffTitle">
+            <p class="eyebrow">BITERUSH TEAM</p>
+            <h1 id="staffTitle">Staff sign in</h1>
+            <p class="intro">Sign in with your BiteRush staff account.</p>
+
+            <form id="staffLoginForm">
+                <label for="staffUsername">Username or work email</label>
+                <input id="staffUsername" name="username" type="text"
+                    autocomplete="username" placeholder="Enter your staff username" required>
+
+                <label for="staffPassword">Password</label>
+                <input id="staffPassword" name="password" type="password"
+                    autocomplete="current-password" placeholder="Enter your password" required>
+
+                <p class="auth-message" id="authMessage" role="alert" aria-live="assertive" hidden>
+                    That username or password is incorrect.
+                </p>
+                <button type="submit">Sign in</button>
+            </form>
+
+            <a class="customer-link" href="../Login/index.html">Return to customer login</a>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('staffLoginForm').addEventListener('submit', event => {
+            event.preventDefault();
+            const username = document.getElementById('staffUsername').value.trim();
+            const password = document.getElementById('staffPassword').value;
+            const authMessage = document.getElementById('authMessage');
+
+            if (username.toLowerCase() !== 'jonas' || password !== '12345') {
+                authMessage.hidden = false;
+                return;
+            }
+
+            sessionStorage.setItem('biterush_staff_demo_session', username);
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+</body>
+</html>

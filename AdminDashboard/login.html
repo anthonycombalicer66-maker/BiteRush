@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BiteRush - Admin Login</title>
+    <link rel="stylesheet" href="../DeliveryAddress/styleadd.css">
+    <link rel="stylesheet" href="./dashboard.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body>
+    <main class="admin-login">
+        <a class="admin-login-brand" aria-label="BiteRush home">
+            <img src="../BiteRushHomePage/HomePagePics/burger.png" alt="">
+            <strong>BiteRush</strong>
+        </a>
+        <h1>Admin sign in</h1>
+        <p class="admin-login-intro">Sign in with your administrator account to continue to the dashboard.</p>
+        <p class="admin-login-security-notice">This front-end sign-in is not secure for real customer data.</p>
+        <form id="adminLoginForm">
+            <label for="adminUsername">Username</label>
+            <input id="adminUsername" name="username" type="text" autocomplete="username" required>
+            <label for="adminPassword">Password</label>
+            <input id="adminPassword" name="password" type="password" autocomplete="current-password" required>
+            <button type="submit">Log in</button>
+            <p class="admin-login-error" id="loginError" role="alert" aria-live="polite"></p>
+        </form>
+    </main>
+    <script src="./login.js" defer></script>
+</body>
+</html>

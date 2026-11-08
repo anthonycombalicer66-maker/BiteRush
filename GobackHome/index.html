@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You - BiteRush</title>
+    <link rel="stylesheet" href="BackCss.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <a class="logo-section" href="../BiteRushHomePage/index.html" aria-label="BiteRush home">
+            <img src="../BiteRushHomePage/HomePagePics/burger.png" alt="BiteRush Logo">
+            <h1>BiteRush</h1>
+        </a>
+        <a class="user-profile" href="../UserInfo/index.html" aria-label="User profile">
+            <img src="../BiteRushHomePage/HomePagePics/image%20108.png" alt="User Profile">
+        </a>
+    </nav>
+
+    <!-- Main Dynamic Content Canvas -->
+    <main class="thank-you-container">
+        
+        <!-- Order confirmation -->
+        <div class="thank-you-content">
+            <header class="confirmation-heading">
+                <span class="confirmation-check" aria-hidden="true">✓</span>
+                <h1 class="thank-you-title">Thank you</h1>
+                <p class="thank-you-subtitle">Your order is on its way!</p>
+                <p class="order-number" id="orderNumber"></p>
+            </header>
+
+            <section class="order-progress" id="order-progress" aria-labelledby="progressTitle">
+                <div class="section-heading">
+                    <h2 id="progressTitle">Order progress</h2>
+                    <p id="estimatedArrival">Estimated arrival: —</p>
+                </div>
+                <ol class="progress-steps">
+                    <li class="progress-step" data-stage="received">
+                        <span class="step-marker" aria-hidden="true">1</span>
+                        <span class="step-label">Order received</span>
+                    </li>
+                    <li class="progress-step" data-stage="preparing">
+                        <span class="step-marker" aria-hidden="true">2</span>
+                        <span class="step-label">Preparing</span>
+                    </li>
+                    <li class="progress-step" data-stage="on_the_way">
+                        <span class="step-marker" aria-hidden="true">3</span>
+                        <span class="step-label">On the way</span>
+                    </li>
+                    <li class="progress-step" data-stage="delivered">
+                        <span class="step-marker" aria-hidden="true">4</span>
+                        <span class="step-label">Delivered</span>
+                    </li>
+                </ol>
+                <p class="progress-note" id="progressNote">We’ve received your order and are getting it ready.</p>
+            </section>
+
+            <section class="order-details" aria-labelledby="detailsTitle">
+                <h2 id="detailsTitle">Order details</h2>
+                <div class="detail-block">
+                    <h3>Items</h3>
+                    <ul class="order-items" id="orderItems">
+                        <li>Order details are unavailable.</li>
+                    </ul>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-block">
+                        <h3>Delivery address</h3>
+                        <p id="deliveryAddress">—</p>
+                    </div>
+                    <div class="detail-block">
+                        <h3>Payment method</h3>
+                        <p id="paymentMethod">—</p>
+                    </div>
+                </div>
+                <p class="delivery-instructions" id="deliveryInstructions" hidden></p>
+                <dl class="order-totals" id="orderTotals"></dl>
+                <a class="receipt-terms-link" href="../DeliveryAddress/terms.html">Terms &amp; privacy</a>
+            </section>
+
+            <nav class="confirmation-actions" aria-label="Order actions">
+                <a class="action-button action-primary" href="../TrackOrder/index.html">Track order</a>
+                <a class="action-button action-feedback" id="receiptFeedback" href="../Feedback/index.html" hidden>Rate your order</a>
+                <a class="action-button action-secondary" href="../BiteRushHomePage/index.html">Back to menu</a>
+            </nav>
+        </div>
+        
+    </main>
+
+    <script>
+        (function () {
+            const receiptKey = 'biterush_last_order';
+            const money = value => `₱ ${Number(value).toFixed(2)}`;
+            let receipt = null;
+
+            try {
+                receipt = JSON.parse(localStorage.getItem(receiptKey) || 'null');
+            } catch (error) {
+                console.error('Unable to read order confirmation:', error);
+            }
+
+            if (!receipt || !Array.isArray(receipt.items)) {
+                document.getElementById('orderNumber').textContent = 'No recent order was found.';
+                document.getElementById('orderItems').innerHTML = '<li>Place an order to view your receipt.</li>';
+                document.getElementById('estimatedArrival').textContent = 'Estimated arrival: unavailable';
+                document.querySelector('.action-primary').setAttribute('aria-disabled', 'true');
+                document.querySelector('.action-primary').classList.add('is-disabled');
+                document.querySelector('.action-primary').removeAttribute('href');
+                return;
+            }
+
+            document.getElementById('orderNumber').textContent = `Order #${receipt.id || '—'}`;
+            if (receipt.status === 'delivered') {
+                document.querySelector('.thank-you-subtitle').textContent =
+                    'Delivered — hope you enjoy your order!';
+            }
+            const estimatedArrival = receipt.etaAt ? new Date(receipt.etaAt) : null;
+            const etaTime = estimatedArrival && !Number.isNaN(estimatedArrival.getTime())
+                ? `${estimatedArrival.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} (${receipt.eta || 'estimated'})`
+                : receipt.eta || '20–45 minutes';
+            document.getElementById('estimatedArrival').textContent = `Estimated arrival: ${etaTime}`;
+            document.getElementById('deliveryAddress').textContent = receipt.address || 'No address provided';
+            document.getElementById('paymentMethod').textContent = receipt.payment || '—';
+            const stages = ['received', 'preparing', 'on_the_way', 'delivered'];
+            const cancelled = receipt.status === 'cancelled';
+            const stageIndex = Math.max(0, stages.indexOf(receipt.status));
+            document.querySelector('.progress-steps').hidden = cancelled;
+            if (cancelled) {
+                document.querySelector('.thank-you-subtitle').textContent = 'This order was cancelled.';
+            }
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.toggle('is-done', index < stageIndex);
+                step.classList.toggle('is-current', index === stageIndex);
+                if (index === stageIndex) step.setAttribute('aria-current', 'step');
+                else step.removeAttribute('aria-current');
+            });
+            const progressNotes = [
+                'We’ve received your order and are getting it ready.',
+                'The kitchen is preparing your order.',
+                'Your order is on the way.',
+                'Your order has been delivered. Enjoy!'
+            ];
+            document.getElementById('progressNote').textContent = cancelled
+                ? `This order was cancelled.${receipt.cancellationReason ? ` Reason: ${receipt.cancellationReason}` : ''}`
+                : progressNotes[stageIndex];
+            const feedbackLink = document.getElementById('receiptFeedback');
+            feedbackLink.hidden = cancelled || stageIndex !== stages.length - 1;
+            feedbackLink.href = `../Feedback/index.html?order=${encodeURIComponent(receipt.id || '')}`;
+            feedbackLink.textContent = receipt.feedback ? 'View your feedback' : 'Rate your order';
+            document.querySelector('.action-primary').hidden = cancelled;
+            document.getElementById('estimatedArrival').textContent = cancelled
+                ? 'Estimated arrival: not applicable'
+                : `Estimated arrival: ${etaTime}`;
+
+            const items = document.getElementById('orderItems');
+            items.replaceChildren();
+            receipt.items.forEach(item => {
+                const row = document.createElement('li');
+                const quantity = Number(item.quantity);
+                const price = Number(item.price);
+                const safeQuantity = Number.isSafeInteger(quantity) && quantity > 0 ? quantity : 1;
+                const safePrice = Number.isFinite(price) && price >= 0 ? price : 0;
+                row.textContent = `${safeQuantity} × ${item.title || 'Item'} — ${money(safePrice * safeQuantity)}`;
+                items.appendChild(row);
+                if (item.instructions) {
+                    const notes = document.createElement('li');
+                    notes.className = 'receipt-item-notes';
+                    notes.textContent = `Preparation notes: ${item.instructions}`;
+                    items.appendChild(notes);
+                }
+            });
+
+            if (receipt.instructions) {
+                const instructions = document.getElementById('deliveryInstructions');
+                instructions.textContent = `Delivery instructions: ${receipt.instructions}`;
+                instructions.hidden = false;
+            }
+
+            const totalRows = [
+                ['Subtotal', receipt.subtotal],
+                ['Discount', -Number(receipt.discount || 0)],
+                [`${receipt.deliveryLabel || 'Standard'} delivery`, receipt.deliveryFee],
+                ['Service fee', receipt.serviceFee],
+                ['Rider tip', receipt.tip],
+                ['Total', receipt.total]
+            ];
+            const totals = document.getElementById('orderTotals');
+            totalRows.forEach(([label, amount], index) => {
+                if (label === 'Discount' && !Number(amount)) return;
+                if (label === 'Rider tip' && !Number(amount)) return;
+                const row = document.createElement('div');
+                row.className = index === totalRows.length - 1 ? 'total-detail' : '';
+                const name = document.createElement('dt');
+                name.textContent = label;
+                const value = document.createElement('dd');
+                value.textContent = label === 'Discount'
+                    ? `-${money(Math.abs(Number(amount) || 0))}`
+                    : money(amount);
+                row.append(name, value);
+                totals.appendChild(row);
+            });
+
+        }());
+    </script>
+    <script src="../SearchResults/search-results-data.js"></script>
+</body>
+</html>

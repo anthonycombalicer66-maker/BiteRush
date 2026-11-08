@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="0; url=/">
+  <title>Redirecting - BiteRush</title>
+</head>
+<body>
+  <p><a id="home-link" href="/">Continue to BiteRush</a></p>
+  <script>
+    (function () {
+      var hostParts = window.location.hostname.split('.');
+      var pathParts = window.location.pathname.split('/').filter(Boolean);
+      var home = hostParts.length >= 3 && hostParts[1].toLowerCase() === 'github'
+        && hostParts[2].toLowerCase().startsWith('io')
+        && pathParts.length
+          ? '/' + pathParts[0] + '/'
+          : '/';
+      var link = document.getElementById('home-link');
+      link.href = home;
+      window.location.replace(home);
+    })();
+  </script>
+</body>
+</html>

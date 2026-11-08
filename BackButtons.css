@@ -1,0 +1,100 @@
+.back-btn,
+.back-link,
+.back-button {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    min-height: 42px !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: #fff !important;
+    color: #17202a !important;
+    box-shadow: 0 4px 12px rgba(23, 32, 42, .16) !important;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease !important;
+}
+
+:is(html.dark-theme, body.dark-theme) :is(.back-btn, .back-link, .back-button) {
+    background: #20262d !important;
+    color: #edf1f5 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .42) !important;
+}
+
+.back-btn:hover,
+.back-link:hover,
+.back-button:hover {
+    transform: translateY(-1px) scale(1.04) !important;
+    box-shadow: 0 6px 15px rgba(23, 32, 42, .2) !important;
+}
+
+:is(html.dark-theme, body.dark-theme) :is(.back-btn, .back-link, .back-button):hover {
+    background: #29313a !important;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, .5) !important;
+}
+
+.back-btn:focus-visible,
+.back-link:focus-visible,
+.back-button:focus-visible {
+    outline: 3px solid #bd7d00 !important;
+    outline-offset: 3px;
+}
+
+.back-btn svg,
+.back-link svg,
+.back-button svg {
+    width: 14px !important;
+    height: 14px !important;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .back-btn,
+    .back-link,
+    .back-button {
+        transition: none !important;
+    }
+}
+
+a.logo-section,
+a.logo,
+a.brand,
+a.auth-logo,
+a.staff-brand,
+a.admin-login-brand,
+a.logo-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+a.user-profile,
+a.profile-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+a.user-profile img,
+a.profile-link img {
+    display: block;
+}
+
+a.logo-section:focus-visible,
+a.logo:focus-visible,
+a.brand:focus-visible,
+a.auth-logo:focus-visible,
+a.staff-brand:focus-visible,
+a.admin-login-brand:focus-visible,
+a.logo-link:focus-visible,
+a.user-profile:focus-visible,
+a.profile-link:focus-visible {
+    outline: 3px solid #bd7d00;
+    outline-offset: 4px;
+}

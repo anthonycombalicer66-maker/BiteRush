@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../darkmode.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | BiteRush</title>
+    <link rel="stylesheet" href="./SignUpKulay.css">
+    <link rel="stylesheet" href="../darkmode.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body>
+    <nav>
+        <a class="logo-section" aria-label="BiteRush home">
+            <img src="../BurgerBitesSignUpForm/Pics/burger.png" alt="" width="38" height="38">
+            <h1>BiteRush</h1>
+            <span>Sign Up</span>
+        </a>
+    </nav>
+
+    <main>
+        <section class="headSec" aria-labelledby="signup-title">
+            <h2 id="signup-title">Create your BiteRush account</h2>
+            <p>Save your details for a faster checkout.</p>
+        </section>
+
+        <form id="signup-form" class="form-cont">
+            <h3>User Details</h3>
+            <div class="row">
+                <div class="signup-field">
+                    <label for="signup-name">Full name</label>
+                    <input id="signup-name" name="fullname" type="text" autocomplete="name" maxlength="80" required>
+                </div>
+                <div class="signup-field">
+                    <label for="signup-username">Username</label>
+                    <input id="signup-username" name="username" type="text" autocomplete="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_.]+" aria-describedby="username-help" required>
+                    <small id="username-help">3–24 letters, numbers, periods, or underscores.</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="signup-field">
+                    <label for="signup-email">Email address</label>
+                    <input id="signup-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="signup-field">
+                    <label for="signup-password">Password</label>
+                    <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" aria-describedby="password-help" required>
+                    <small id="password-help">Use at least 8 characters. Do not reuse a real password.</small>
+                </div>
+                <div class="signup-field">
+                    <label for="signup-confirm-password">Confirm password</label>
+                    <input id="signup-confirm-password" name="confirm-password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required>
+                </div>
+            </div>
+
+            <div class="Checkbox-grp">
+                <label>
+                    <input id="signup-data-consent" type="checkbox" required>
+                    I consent to saving my account details in this browser.
+                </label>
+            </div>
+
+            <p class="auth-message" id="signup-message" role="alert" aria-live="assertive" aria-atomic="true" hidden></p>
+            <button class="btn-crt" type="submit">Create Account</button>
+            <p class="auth-return">Already registered? <a href="index.html">Log in</a></p>
+            <p class="auth-notice">Your account is saved in this browser. Use a unique password and never reuse a password you use elsewhere.</p>
+        </form>
+    </main>
+    <script src="./auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17202a">
+    <title>Staff Dashboard | BiteRush</title>
+    <link rel="stylesheet" href="Staff.css">
+    <link rel="stylesheet" href="../BackButtons.css">
+</head>
+<body class="dashboard-page">
+    <header class="staff-header">
+        <a class="staff-brand" href="../BiteRushHomePage/index.html" aria-label="BiteRush home">
+            <img src="../BiteRushHomePage/HomePagePics/burger.png" alt="">
+            <span>BiteRush</span>
+        </a>
+        <div class="staff-header-actions">
+            <span class="staff-label">STAFF PORTAL</span>
+            <button class="sign-out-button" id="signOutButton" type="button">Sign out</button>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <section class="dashboard-welcome">
+            <div>
+                <p class="eyebrow">STAFF DASHBOARD</p>
+                <h1>Welcome, <span id="staffName">Staff</span></h1>
+                <p>Review the latest order saved on this device.</p>
+            </div>
+        </section>
+
+        <section class="order-card" aria-labelledby="orderHeading">
+            <div class="order-card-header">
+                <div>
+                    <p class="eyebrow">LATEST CUSTOMER ORDER</p>
+                    <h2 id="orderHeading">Order details</h2>
+                </div>
+                <span class="order-status" id="orderStatus">Loading…</span>
+            </div>
+            <p class="order-message" id="orderMessage" role="status" aria-live="polite" hidden></p>
+            <div id="orderDetails"></div>
+            <div class="order-status-editor" id="orderStatusEditor" hidden>
+                <label for="statusSelect">Update order status</label>
+                <div class="status-controls">
+                    <select id="statusSelect">
+                        <option value="received">Order received</option>
+                        <option value="preparing">Preparing</option>
+                        <option value="on_the_way">On the way</option>
+                        <option value="delivered">Delivered</option>
+                    </select>
+                    <button class="save-status-button" id="saveStatusButton" type="button">Save status</button>
+                </div>
+            </div>
+        </section>
+
+        <p class="dashboard-disclaimer">Orders are stored on this device only, and staff access is not secured. Do not use this page with real customer data.</p>
+    </main>
+
+    <script>
+        (function () {
+            const sessionKey = 'biterush_staff_demo_session';
+            const receiptKey = 'biterush_last_order';
+            const stages = ['received', 'preparing', 'on_the_way', 'delivered'];
+            const stageLabels = {
+                received: 'Order received',
+                preparing: 'Preparing',
+                on_the_way: 'On the way',
+                delivered: 'Delivered'
+            };
+            const staffName = sessionStorage.getItem(sessionKey);
+
+            if (!staffName) {
+                window.location.replace('index.html');
+                return;
+            }
+
+            document.getElementById('staffName').textContent = staffName;
+
+            const orderStatus = document.getElementById('orderStatus');
+            const orderDetails = document.getElementById('orderDetails');
+            const orderMessage = document.getElementById('orderMessage');
+            const statusSelect = document.getElementById('statusSelect');
+            const statusEditor = document.getElementById('orderStatusEditor');
+
+            function renderOrder() {
+                let receipt;
+                try {
+                    receipt = JSON.parse(localStorage.getItem(receiptKey) || 'null');
+                } catch (error) {
+                    console.error('Unable to read order details:', error);
+                    orderStatus.textContent = 'Unavailable';
+                    orderDetails.textContent = 'Order data could not be read from this browser.';
+                    statusEditor.hidden = true;
+                    return;
+                }
+
+                if (!receipt || !Array.isArray(receipt.items) || receipt.items.length === 0) {
+                    orderStatus.textContent = 'No order yet';
+                    orderDetails.innerHTML = '<p class="empty-order">No recent order is saved on this device.</p>';
+                    statusEditor.hidden = true;
+                    return;
+                }
+
+                const status = stages.includes(receipt.status) ? receipt.status : 'received';
+                orderStatus.textContent = stageLabels[status];
+                statusSelect.value = status;
+                statusEditor.hidden = false;
+
+                const itemList = receipt.items.map(item => {
+                    const row = document.createElement('li');
+                    const quantity = Number(item.quantity) || 1;
+                    row.textContent = `${quantity} × ${item.title || 'Item'}`;
+                    return row;
+                });
+                const items = document.createElement('ul');
+                items.className = 'order-items';
+                itemList.forEach(item => items.appendChild(item));
+
+                const details = [
+                    ['Order number', receipt.id || '—'],
+                    ['Items', items],
+                    ['Total', typeof receipt.total === 'number' ? `$${receipt.total.toFixed(2)}` : '—'],
+                    ['Delivery address', receipt.address || 'No address provided'],
+                    ['Payment', receipt.payment || '—'],
+                    ['Placed', receipt.createdAt ? new Date(receipt.createdAt).toLocaleString() : '—']
+                ];
+                const list = document.createElement('dl');
+                list.className = 'order-details';
+                details.forEach(([label, value]) => {
+                    const row = document.createElement('div');
+                    row.className = 'detail-row';
+                    const term = document.createElement('dt');
+                    term.textContent = label;
+                    const description = document.createElement('dd');
+                    if (value instanceof HTMLElement) {
+                        description.appendChild(value);
+                    } else {
+                        description.textContent = value;
+                    }
+                    row.append(term, description);
+                    list.appendChild(row);
+                });
+                orderDetails.replaceChildren(list);
+            }
+
+            document.getElementById('saveStatusButton').addEventListener('click', () => {
+                let receipt;
+                try {
+                    receipt = JSON.parse(localStorage.getItem(receiptKey) || 'null');
+                    if (!receipt || !Array.isArray(receipt.items) || receipt.items.length === 0) {
+                        orderMessage.textContent = 'There is no order available to update.';
+                        orderMessage.hidden = false;
+                        return;
+                    }
+                    if (receipt.status === 'cancelled' || receipt.status === 'delivered') {
+                        orderMessage.textContent = `Terminal orders (${receipt.status}) cannot be changed.`;
+                        orderMessage.hidden = false;
+                        return;
+                    }
+                    receipt.status = statusSelect.value;
+                    receipt.updatedAt = new Date().toISOString();
+                    receipt.statusUpdatedBy = staffName;
+                    const ordersKey = 'biterush_orders';
+                    const history = JSON.parse(localStorage.getItem(ordersKey) || '[]');
+                    if (Array.isArray(history)) {
+                        const index = history.findIndex(order => order && order.id === receipt.id);
+                        if (index !== -1) {
+                            history[index] = { ...history[index], ...receipt };
+                            localStorage.setItem(ordersKey, JSON.stringify(history));
+                        }
+                    }
+                    localStorage.setItem(receiptKey, JSON.stringify(receipt));
+                } catch (error) {
+                    console.error('Unable to update order status:', error);
+                    orderMessage.textContent = 'The order status could not be saved in this browser.';
+                    orderMessage.hidden = false;
+                    return;
+                }
+
+                orderMessage.textContent = 'Order status updated.';
+                orderMessage.hidden = false;
+                renderOrder();
+            });
+
+            document.getElementById('signOutButton').addEventListener('click', () => {
+                sessionStorage.removeItem(sessionKey);
+                window.location.href = 'index.html';
+            });
+
+            renderOrder();
+        })();
+    </script>
+</body>
+</html>

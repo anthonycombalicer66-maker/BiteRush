@@ -1,0 +1,387 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: #f4f6f9;
+    color: #17202a;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+}
+
+.staff-header {
+    height: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px clamp(16px, 5vw, 48px);
+    background: #17202a;
+    border-bottom: 3px solid #ffd233;
+}
+
+.staff-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.staff-brand img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+}
+
+.staff-label {
+    color: #e4e9ee;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.staff-main {
+    min-height: calc(100vh - 66px);
+    display: grid;
+    place-items: center;
+    padding: 32px 16px;
+}
+
+.staff-card {
+    width: min(440px, 100%);
+    padding: clamp(24px, 6vw, 40px);
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 12px 34px rgba(23, 32, 42, 0.12);
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: #8a6a00;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+}
+
+.staff-card h1 {
+    margin: 0;
+    font-size: 30px;
+    letter-spacing: -0.04em;
+}
+
+.intro {
+    margin: 9px 0 24px;
+    color: #68717b;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.staff-card form {
+    display: grid;
+    gap: 9px;
+}
+
+.staff-card label {
+    margin-top: 5px;
+    color: #37414b;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.staff-card input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid #d9dee4;
+    border-radius: 10px;
+    background: #fbfcfd;
+    color: #17202a;
+    font: inherit;
+    font-size: 14px;
+}
+
+.staff-card input:focus-visible {
+    outline: 3px solid rgba(224, 185, 0, 0.35);
+    border-color: #c39e00;
+}
+
+.staff-card button {
+    min-height: 48px;
+    margin-top: 10px;
+    border: 0;
+    border-radius: 10px;
+    background: #ffd233;
+    color: #17202a;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.staff-card button:hover {
+    background: #f4c51d;
+}
+
+.auth-message {
+    margin: 7px 0 0;
+    padding: 12px;
+    border: 1px solid #f0d58a;
+    border-radius: 9px;
+    background: #fff8df;
+    color: #594300;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.customer-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 14px;
+    color: #59636d;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.customer-link:hover {
+    color: #17202a;
+    text-decoration: underline;
+}
+
+a:focus-visible,
+button:focus-visible {
+    outline: 3px solid #bd7d00;
+    outline-offset: 3px;
+}
+
+.dashboard-page {
+    background: #f4f6f9;
+}
+
+.staff-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.sign-out-button {
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid #5c6570;
+    border-radius: 9px;
+    background: transparent;
+    color: #ffffff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.sign-out-button:hover {
+    background: #283643;
+}
+
+.dashboard-main {
+    width: min(900px, 100%);
+    margin: 0 auto;
+    padding: clamp(24px, 5vw, 48px) 16px 36px;
+}
+
+.dashboard-welcome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.dashboard-welcome .eyebrow {
+    margin-bottom: 9px;
+}
+
+.dashboard-welcome h1 {
+    margin: 0;
+    font-size: clamp(26px, 5vw, 36px);
+    letter-spacing: -0.04em;
+}
+
+.dashboard-welcome p:last-child {
+    margin: 9px 0 0;
+    color: #68717b;
+    font-size: 14px;
+}
+
+.order-card {
+    padding: clamp(20px, 4vw, 32px);
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(23, 32, 42, 0.08);
+}
+
+.order-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.order-card-header .eyebrow {
+    margin-bottom: 7px;
+}
+
+.order-card-header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.order-status {
+    padding: 8px 11px;
+    border-radius: 999px;
+    background: #eaf3ff;
+    color: #21558a;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.order-details {
+    margin: 0;
+}
+
+.detail-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.35fr) minmax(0, 1fr);
+    gap: 16px;
+    padding: 13px 0;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.detail-row dt {
+    color: #68717b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.detail-row dd {
+    min-width: 0;
+    margin: 0;
+    color: #17202a;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.order-items {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.order-items li + li {
+    margin-top: 5px;
+}
+
+.empty-order {
+    margin: 18px 0 0;
+    color: #68717b;
+    font-size: 14px;
+}
+
+.order-status-editor {
+    padding-top: 20px;
+}
+
+.order-status-editor label {
+    display: block;
+    margin-bottom: 8px;
+    color: #37414b;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.status-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.status-controls select {
+    min-width: 0;
+    min-height: 44px;
+    flex: 1;
+    padding: 0 12px;
+    border: 1px solid #d9dee4;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #17202a;
+    font: inherit;
+    font-size: 13px;
+}
+
+.save-status-button {
+    min-height: 44px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 9px;
+    background: #ffd233;
+    color: #17202a;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.save-status-button:hover {
+    background: #f4c51d;
+}
+
+.order-message {
+    margin: 15px 0 0;
+    padding: 11px 13px;
+    border-radius: 9px;
+    background: #e8f5e9;
+    color: #236236;
+    font-size: 13px;
+}
+
+.dashboard-disclaimer {
+    margin: 16px 2px 0;
+    color: #68717b;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+@media (max-width: 520px) {
+    .staff-header-actions {
+        gap: 10px;
+    }
+
+    .staff-label {
+        font-size: 9px;
+    }
+
+    .sign-out-button {
+        min-height: 36px;
+        padding: 0 10px;
+    }
+
+    .dashboard-welcome {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .detail-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+
+    .status-controls {
+        flex-direction: column;
+    }
+}
