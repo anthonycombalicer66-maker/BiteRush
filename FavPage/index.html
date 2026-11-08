@@ -84,7 +84,21 @@
     <!-- Interactive Cart & Favorites Logic -->
     <script>
         // ---- Favorites Rendering ----
-        let favorites = JSON.parse(localStorage.getItem('biterush_favorites')) || [];
+        const favoritesKey = 'biterush_favorites';
+        let favorites = [];
+        try {
+            const savedFavorites = JSON.parse(localStorage.getItem(favoritesKey) || '[]');
+            if (!Array.isArray(savedFavorites)) {
+                throw new TypeError('Saved favorites are not a list.');
+            }
+            favorites = savedFavorites.filter(item =>
+                item && typeof item === 'object'
+                && typeof item.title === 'string' && item.title.trim()
+                && typeof item.img === 'string' && item.img.trim()
+            );
+        } catch (error) {
+            console.error('Unable to read saved favorites:', error);
+        }
         const favoritesGrid = document.getElementById('favoritesGrid');
 
         const legacyImagePaths = {
@@ -193,7 +207,7 @@
 
         function removeFavorite(title) {
             favorites = favorites.filter(item => item.title !== title);
-            localStorage.setItem('biterush_favorites', JSON.stringify(favorites));
+            localStorage.setItem(favoritesKey, JSON.stringify(favorites));
             renderFavorites();
         }
 
